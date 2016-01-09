@@ -5,18 +5,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
-
-import org.joda.time.DateTime;
-import org.joda.time.Instant;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -64,6 +57,8 @@ public class MainActivity extends ListActivity {
             @Override
             public void onClick(View v) {
                 startFeed(FeederDBAdapter.FEED_TYPE_RIGHT);
+                Intent intent = new Intent(context, TimerActivity.class);
+                startActivityForResult(intent, 1001);
             }
         });
 
@@ -71,6 +66,8 @@ public class MainActivity extends ListActivity {
             @Override
             public void onClick(View v) {
                 startFeed(FeederDBAdapter.FEED_TYPE_BOTTLE);
+                Intent intent = new Intent(context, TimerActivity.class);
+                startActivityForResult(intent, 1001);
             }
         });
 
@@ -129,15 +126,9 @@ public class MainActivity extends ListActivity {
             String endDate = data.getStringExtra(FeederDBAdapter.COL_END_DATE);
             int feedLength = data.getIntExtra(FeederDBAdapter.COL_FEED_LENGTH, 0);
             dbAdapter.stopFeed(endDate, feedLength);
+            updateFeedsList();
+            updateLastFeed();
 //            cursorAdapter.notifyDataSetChanged();
-            Handler handler = new Handler() {
-                @Override
-                public void handleMessage(Message msg) {
-                    super.handleMessage(msg);
-                    cursorAdapter.notifyDataSetChanged();
-                }
-
-            };
 
 
         }
