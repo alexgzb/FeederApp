@@ -21,6 +21,8 @@ public class NotificationPublish extends BroadcastReceiver{
     public void onReceive(Context context, Intent intent) {
         //Get NotificationManager from System
         NotificationManager nManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        //Cancel Previous
+        nManager.cancel(0);
         //Fetch the Notification from the intent
         Notification notification = intent.getParcelableExtra(NOTIFICATION);
         int id = intent.getIntExtra(NOTIFICATION_ID, 0);

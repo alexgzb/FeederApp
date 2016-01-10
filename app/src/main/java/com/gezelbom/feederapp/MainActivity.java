@@ -39,15 +39,19 @@ public class MainActivity extends ListActivity {
     ImageView bottleButton;
     TextView textViewLastFeedStart;
     Context context;
+    PendingIntent pendingAlarmIntent;
 
     FeedCursorAdapter cursorAdapter;
     FeederDBAdapter dbAdapter;
+    AlarmManager alarmManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         context = this;
+
+        alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
 
         //Declare the views
         textViewLastFeedStart = (TextView) findViewById(R.id.textView_last_feed_value);
@@ -106,7 +110,7 @@ public class MainActivity extends ListActivity {
                         e.printStackTrace();
                     }
                     //Divide feed length by 60 for minutes
-                    lengths.add(cursor.getInt(1) / 60);
+                    lengths.add(cursor.getInt(1));
                 }
 
                 //Pass the data to the Intent and start Activity GraphActivity
@@ -168,6 +172,9 @@ public class MainActivity extends ListActivity {
     private void startFeed(int feedType) {
         dbAdapter.startFeed(feedType, getEpochTimeInInt());
         Intent intent = new Intent(context, TimerActivity.class);
+        //If previous alarm exists cancel it
+        if (pendingAlarmIntent!= null)
+            alarmManager.cancel(pendingAlarmIntent);
         startActivityForResult(intent, 1001);
     }
 
@@ -229,10 +236,10 @@ public class MainActivity extends ListActivity {
         Intent intent = new Intent(this, NotificationPublish.class);
         intent.putExtra(NotificationPublish.NOTIFICATION_ID, 1002);
         intent.putExtra(NotificationPublish.NOTIFICATION, builder.build());
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        pendingAlarmIntent = pendingIntent;
 
         //Create an AlarmManager and schedule the Notification to the future currently 3hours
-        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         long triggerAtMillis = SystemClock.elapsedRealtime() + delay;
         alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, triggerAtMillis, pendingIntent);
 

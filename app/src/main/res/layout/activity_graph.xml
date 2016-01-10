@@ -9,7 +9,7 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         ap:label="Daily feed length"
-        ap:rangeLabel="Minutes"
+        ap:rangeLabel="Seconds"
         ap:domainLabel="Date"
         ap:borderColor="#000000"
         ap:backgroundColor="#000000"
