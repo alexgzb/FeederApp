@@ -26,9 +26,7 @@ public class FeederDBAdapter {
     public static final String COL_START_DATE = "startDate";
     public static final String COL_END_DATE = "endDate";
     public static final String COL_FEED_LENGTH = "feedLength";
-    public static final int FEED_TYPE_LEFT = 0;
-    public static final int FEED_TYPE_RIGHT = 1;
-    public static final int FEED_TYPE_BOTTLE = 2;
+
     private String startDate;
     private int feedType;
 
@@ -65,11 +63,15 @@ public class FeederDBAdapter {
         database = helper.getWritableDatabase();
     }
 
+    public void dropAndCreate() throws SQLException {
+        helper.dropAndCreate(database);
+    }
+
     public Feed getLastFeed() {
         String[] columns = new String[] { COL_UID, COL_FEED_TYPE, COL_START_DATE, COL_END_DATE, COL_FEED_LENGTH};
         Cursor cursor = database.query(DATABASE_TABLE, columns, null, null, null, null, COL_UID + " DESC");
         cursor.moveToFirst();
-        if (cursor.getCount() != 5)
+        if (cursor.getCount() == 0)
             return null;
         int feedType = cursor.getInt(1);
         String startDate = cursor.getString(2);
@@ -88,7 +90,7 @@ public class FeederDBAdapter {
     }
 
     /**
-     *Create a new row using execSQL
+     *Create a new row using execSQL, gives possibility to use functions during sqls
      * @param feedType
      * @param startDate
      * @param endDate
@@ -147,6 +149,7 @@ public class FeederDBAdapter {
         Log.d(TAG, "Deleted " + rows + " rows");
     }
 
+
     /**
      * Returns an int row count
      * @return
@@ -177,13 +180,17 @@ public class FeederDBAdapter {
 
         public DatabaseHelper(Context context) {
             super(context, DATABASE_NAME, null, DATABASE_VERSION);
-
         }
 
         @Override
         public void onCreate(SQLiteDatabase db) {
             db.execSQL(CREATE_TABLE);
             Log.d(TAG, "Creating Database");
+        }
+
+        public void dropAndCreate(SQLiteDatabase db) {
+            db.execSQL(DROP_TABLE);
+            onCreate(db);
         }
 
         @Override

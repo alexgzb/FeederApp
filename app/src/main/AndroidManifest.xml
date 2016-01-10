@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.gezelbom.feederapp">
+    <uses-permission android:name="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE"/>
+
+    <uses-permission android:name="android.permission.VIBRATE"/>
 
     <application
         android:allowBackup="true"
@@ -20,6 +23,7 @@
             android:name=".TimerActivity"
             android:screenOrientation="landscape">
         </activity>
+        <receiver android:name=".NotificationPublish" />
     </application>
 
 </manifest>

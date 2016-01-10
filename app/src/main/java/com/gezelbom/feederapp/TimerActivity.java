@@ -2,6 +2,8 @@ package com.gezelbom.feederapp;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -14,64 +16,64 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+/**
+ * Activity that when started displays a timer and starts counting time. Returns an intent to the caller
+ */
 public class TimerActivity extends AppCompatActivity {
 
     Chronometer timer;
     ImageButton stopButton;
     ImageButton playButton;
-    ImageButton pauseButton;
+    ImageButton lullabyButton;
+    MediaPlayer mediaPlayer;
     long elapsedTime = 0;
     long startedTime;
-    long stoppedTime;
-
+    private boolean muted;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_timer);
 
+        muted = true;
+
         playButton = (ImageButton) findViewById(R.id.button_play);
         stopButton = (ImageButton) findViewById(R.id.button_stop);
-        pauseButton = (ImageButton) findViewById(R.id.button_pause);
+        lullabyButton = (ImageButton) findViewById(R.id.imageButton_lullaby);
         timer = (Chronometer) findViewById(R.id.chronometer_timer);
 
+        //Start the timer
         startedTime = SystemClock.elapsedRealtime();
         timer.setBase(startedTime);
         timer.start();
         playButton.setEnabled(false);
 
-
-        playButton.setOnClickListener(new View.OnClickListener() {
+        /*lullabyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startedTime = SystemClock.elapsedRealtime();
-                timer.setBase(SystemClock.elapsedRealtime() + stoppedTime);
-                timer.start();
-                playButton.setEnabled(false);
-                pauseButton.setEnabled(true);
+                if (muted) {
+                    lullabyButton.setImageResource(R.drawable.ic_action_music_white);
+                    muted = false;
+                    playLullaby();
+                } else {
+                    muted = true;
+                    lullabyButton.setImageResource(R.drawable.ic_action_volume_mute_white);
+                    stopLullaby();
+                }
             }
-        });
+        });*/
 
-        pauseButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                timer.stop();
-                stoppedTime = timer.getBase();
-                elapsedTime += SystemClock.elapsedRealtime() - startedTime;
-                pauseButton.setEnabled(false);
-                playButton.setEnabled(true);
-            }
-        });
-
+        //When stop button is pressed
         stopButton.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View v) {
+                //Stop the timer
                 timer.stop();
+//                stopLullaby();
                 elapsedTime += SystemClock.elapsedRealtime() - startedTime;
 
-                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-                Date date = new Date();
-                String endDate = dateFormat.format(date);
+                String endDate = MainActivity.getEpochTimeInInt();
                 int elapsed = (int) (elapsedTime / 1000);
 
                 // Put extra to the activity that is waiting for results and return
@@ -83,5 +85,16 @@ public class TimerActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    private void stopLullaby() {
+        mediaPlayer.stop();
+    }
+
+    private void playLullaby() {
+        mediaPlayer = MediaPlayer.create(this,R.raw.twinkle_twinkle);
+        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        mediaPlayer.setLooping(true);
+        mediaPlayer.start();
     }
 }
