@@ -21,6 +21,15 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
+
+/**
+ * MainActivity of FeederApp which is a app for new parents to measure the time that the babies have
+ * eaten each day. It stores these feeds in a database.
+ *
+ * The app can during the feeding play a calming lullaby.
+ * It can display the daily feeding lengths in a graph
+ * It notifies when 3hours have passed since the latest feeding session.
+ */
 public class MainActivity extends ListActivity {
 
     private static final String TAG = "MainActivity";
