@@ -65,22 +65,26 @@ public class TimerActivity extends AppCompatActivity {
 
         //When stop button is pressed
         stopButton.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View v) {
                 //Stop the timer
                 timer.stop();
+
+                //Stop the lullaby if it is playing
                 if (!muted)
                     stopLullaby();
-                elapsedTime += SystemClock.elapsedRealtime() - startedTime;
 
+                //Calculate the elapsed time
+                elapsedTime += SystemClock.elapsedRealtime() - startedTime;
+                int elapsedInt = (int) (elapsedTime / 1000);
+
+                //Get the current date in the correct format
                 String endDate = MainActivity.getEpochTimeInInt();
-                int elapsed = (int) (elapsedTime / 1000);
 
                 // Put extra to the activity that is waiting for results and return
                 Intent returnIntent = new Intent();
                 returnIntent.putExtra(FeederDBAdapter.COL_END_DATE, endDate);
-                returnIntent.putExtra(FeederDBAdapter.COL_FEED_LENGTH, elapsed);
+                returnIntent.putExtra(FeederDBAdapter.COL_FEED_LENGTH, elapsedInt);
                 setResult(Activity.RESULT_OK, returnIntent);
                 finish();
 
@@ -93,6 +97,8 @@ public class TimerActivity extends AppCompatActivity {
         mediaPlayer.release();
     }
 
+    //Create a MediaPlayer set dataSource as audioFile
+    //Set to loop and start playing the audio
     private void playLullaby() {
         mediaPlayer = MediaPlayer.create(this,R.raw.twinkle_twinkle);
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);

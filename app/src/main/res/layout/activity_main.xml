@@ -77,7 +77,6 @@
     </RelativeLayout>
 
     <LinearLayout
-        android:visibility="invisible"
         android:layout_marginTop="16dp"
         android:id="@+id/linear_layout_config"
         android:layout_width="match_parent"
@@ -85,20 +84,11 @@
         android:layout_below="@+id/relativeLayout_top">
 
         <Button
+            android:id="@+id/button_graph"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Tjena"
-            android:layout_weight="1" />
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Tjena"
-            android:layout_weight="1" />
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Tjena"
-            android:layout_weight="1" />
+            android:text="Daily Feed Graph"
+            android:layout_weight="1" />/>
     </LinearLayout>
 
     <ListView

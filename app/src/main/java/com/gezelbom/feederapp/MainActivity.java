@@ -15,7 +15,9 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
@@ -24,6 +26,7 @@ public class MainActivity extends ListActivity {
     private static final String TAG = "MainActivity";
     Button leftButton;
     Button rightButton;
+    Button graphButton;
     ImageView bottleButton;
     TextView textViewLastFeedStart;
     Context context;
@@ -42,6 +45,7 @@ public class MainActivity extends ListActivity {
         leftButton = (Button) findViewById(R.id.button_left);
         rightButton = (Button) findViewById(R.id.button_right);
         bottleButton = (ImageView) findViewById(R.id.button_bottle);
+        graphButton = (Button) findViewById(R.id.button_graph);
 
         //Create a dbAdapter and open the connection to the DB
         dbAdapter = new FeederDBAdapter(this);
@@ -56,7 +60,6 @@ public class MainActivity extends ListActivity {
                 startFeed(Feed.FEED_TYPE_LEFT);
             }
         });
-
         rightButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -67,6 +70,41 @@ public class MainActivity extends ListActivity {
             @Override
             public void onClick(View v) {
                 startFeed(Feed.FEED_TYPE_BOTTLE);
+            }
+        });
+
+        //OnclickListener for the graph button
+        graphButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                //Get the cursor with the daily feed lengths
+                Cursor cursor = dbAdapter.getFeedsPerDay();
+                ArrayList<Long> dates = new ArrayList<>(cursor.getCount());
+                ArrayList<Integer> lengths = new ArrayList<>(cursor.getCount());
+
+                //The DateFormat which the cursor uses
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+
+                //Get values for the graph from the cursor
+                for (int i = 0; i < cursor.getCount(); i++) {
+                    cursor.moveToPosition(i);
+
+                    try {
+                        //parse the value as a date to get it as a long in millis
+                        dates.add(sdf.parse(cursor.getString(0)).getTime());
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                    //Divide feed length by 60 for minutes
+                    lengths.add(cursor.getInt(1) / 60);
+                }
+
+                //Pass the data to the Intent and start Activity GraphActivity
+                Intent intent = new Intent(context, GraphActivity.class);
+                intent.putExtra("dates", dates);
+                intent.putIntegerArrayListExtra("lengths", lengths);
+                startActivity(intent);
             }
         });
 
@@ -115,6 +153,7 @@ public class MainActivity extends ListActivity {
 
     /**
      * Calls the db to store the feedType and startDate as state in the DBAdapter
+     *
      * @param feedType the type of the current feed to store
      */
     private void startFeed(int feedType) {
@@ -126,6 +165,7 @@ public class MainActivity extends ListActivity {
 
     /**
      * Method that creates a String of the current dateTime as a String formated as SQLiteDB requires
+     *
      * @return DateTime as String in the format yyyy-MM-dd HH:mm:ss
      */
     public static String getEpochTimeInInt() {
@@ -151,8 +191,8 @@ public class MainActivity extends ListActivity {
             //Update the list and the textView
             updateFeedsList();
             updateLastFeed();
-            //10800000 = 3 hours
-            scheduleNotification(3000);
+            //Delay 10800000 = 3 hours
+            scheduleNotification(10800000);
 
 
         }
@@ -182,7 +222,6 @@ public class MainActivity extends ListActivity {
         intent.putExtra(NotificationPublish.NOTIFICATION, builder.build());
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
-        //TODO make the time and notification configurable
         //Create an AlarmManager and schedule the Notification to the future currently 3hours
         AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         long triggerAtMillis = SystemClock.elapsedRealtime() + delay;

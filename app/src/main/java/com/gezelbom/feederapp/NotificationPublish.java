@@ -24,8 +24,8 @@ public class NotificationPublish extends BroadcastReceiver{
         //Fetch the Notification from the intent
         Notification notification = intent.getParcelableExtra(NOTIFICATION);
         int id = intent.getIntExtra(NOTIFICATION_ID, 0);
-        //Notify and vibrate
+        //Notify and vibrate for 1 sec
         nManager.notify(id, notification);
-        ((Vibrator)context.getSystemService(Context.VIBRATOR_SERVICE)).vibrate(3000);
+        ((Vibrator)context.getSystemService(Context.VIBRATOR_SERVICE)).vibrate(1000);
     }
 }
