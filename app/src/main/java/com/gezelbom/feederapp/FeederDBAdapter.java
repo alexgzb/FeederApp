@@ -8,6 +8,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import java.util.ArrayList;
+
 /**
  * Created by Alex
  */
@@ -26,9 +28,7 @@ public class FeederDBAdapter {
     public static final String COL_START_DATE = "startDate";
     public static final String COL_END_DATE = "endDate";
     public static final String COL_FEED_LENGTH = "feedLength";
-    public static final int FEED_TYPE_LEFT = 0;
-    public static final int FEED_TYPE_RIGHT = 1;
-    public static final int FEED_TYPE_BOTTLE = 2;
+
     private String startDate;
     private int feedType;
 
@@ -56,25 +56,31 @@ public class FeederDBAdapter {
     /**
      * Method that where database object is created and ready to be used.
      *
-     * @return an instance of this class
-     *
-     * @throws SQLException
      */
     public void open() throws SQLException {
         helper = new DatabaseHelper(context);
         database = helper.getWritableDatabase();
     }
 
+    public void dropAndCreate() throws SQLException {
+        helper.dropAndCreate(database);
+    }
+
+    public Cursor getFeedsPerDay() {
+        return database.rawQuery("SELECT strftime('%Y-%m-%d', startDate) as date, sum(feedlength) as length from feeds", null);
+    }
+
     public Feed getLastFeed() {
         String[] columns = new String[] { COL_UID, COL_FEED_TYPE, COL_START_DATE, COL_END_DATE, COL_FEED_LENGTH};
         Cursor cursor = database.query(DATABASE_TABLE, columns, null, null, null, null, COL_UID + " DESC");
         cursor.moveToFirst();
-        if (cursor.getCount() != 5)
+        if (cursor.getCount() == 0)
             return null;
         int feedType = cursor.getInt(1);
         String startDate = cursor.getString(2);
         String endDate = cursor.getString(3);
         int feedLength = cursor.getInt(4);
+        cursor.close();
         return new Feed(feedType,startDate,endDate, feedLength);
     }
 
@@ -88,11 +94,7 @@ public class FeederDBAdapter {
     }
 
     /**
-     *Create a new row using execSQL
-     * @param feedType
-     * @param startDate
-     * @param endDate
-     * @param feedLength
+     *Create a new row using execSQL, gives possibility to use functions during sqls
      */
     private void createRow(int feedType, String startDate, String endDate, int feedLength) {
         //Must use the execSQL to be able to use the datetime() function.
@@ -113,11 +115,6 @@ public class FeederDBAdapter {
     /**
      * Create a new row using Insert convenience method from the database
      *
-     * @param feedType
-     * @param startDate
-     * @param endDate
-     * @param feedLength
-     * @return
      */
     private long insertRow(int feedType, String startDate, String endDate, int feedLength) {
         ContentValues values = new ContentValues();
@@ -147,9 +144,9 @@ public class FeederDBAdapter {
         Log.d(TAG, "Deleted " + rows + " rows");
     }
 
+
     /**
      * Returns an int row count
-     * @return
      */
     public int getCount() {
         return database.query(DATABASE_TABLE,
@@ -159,7 +156,6 @@ public class FeederDBAdapter {
 
     /**
      * Returns an Cursor object containing all rows from PRIMETABLES.
-     * @return
      */
     public Cursor fetchAllRows() {
 
@@ -172,20 +168,41 @@ public class FeederDBAdapter {
         return cursor;
     }
 
+    /**
+     * The inner Class that extends SQLiteOpenHelper and gives direct access to the db
+     * The methods onCreate and onUpgrade must be and are implemented.
+     *
+     */
     private static class DatabaseHelper extends SQLiteOpenHelper {
 
-
+        /**
+         * Constructor takes only the context but uses the information found in the
+         * Helper to create the DB with the super call.
+         */
         public DatabaseHelper(Context context) {
             super(context, DATABASE_NAME, null, DATABASE_VERSION);
-
         }
 
+        /**
+         * Creates the database using the CREATE_TABLE Statement
+         */
         @Override
         public void onCreate(SQLiteDatabase db) {
             db.execSQL(CREATE_TABLE);
             Log.d(TAG, "Creating Database");
         }
 
+        /**
+         * Firstly drop the current Table, and the create a new table.
+         */
+        public void dropAndCreate(SQLiteDatabase db) {
+            db.execSQL(DROP_TABLE);
+            onCreate(db);
+        }
+
+        /**
+         * Firstly drop the current Table, and the create a new table. Upgrade log
+         */
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
             Log.w(TAG, "Upgrading database from version " + oldVersion + " to "

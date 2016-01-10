@@ -27,8 +27,10 @@
 
         <ImageView
             android:id="@+id/button_bottle"
+
             android:layout_width="96dp"
             android:layout_height="96dp"
+            android:padding="10dp"
             android:layout_toEndOf="@+id/button_left"
             android:layout_toRightOf="@+id/button_left"
             android:background="@color/colorAccent"
@@ -48,6 +50,7 @@
             android:textColor="#ffffff"
             android:textSize="59sp" />
 
+
         <RelativeLayout
             android:layout_marginTop="16dp"
             android:layout_width="wrap_content"
@@ -58,7 +61,7 @@
                 android:id="@+id/textView_last_feed_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Last Feed started: " />
+                android:text="Last Feed started:  " />
 
             <TextView
                 android:id="@+id/textView_last_feed_value"
@@ -73,10 +76,24 @@
 
     </RelativeLayout>
 
+    <LinearLayout
+        android:layout_marginTop="16dp"
+        android:id="@+id/linear_layout_config"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/relativeLayout_top">
+
+        <Button
+            android:id="@+id/button_graph"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Daily Feed Graph"
+            android:layout_weight="1" />/>
+    </LinearLayout>
+
     <ListView
         android:id="@android:id/list"
-        android:layout_marginTop="16dp"
-        android:layout_below="@+id/relativeLayout_top"
+        android:layout_below="@+id/linear_layout_config"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 

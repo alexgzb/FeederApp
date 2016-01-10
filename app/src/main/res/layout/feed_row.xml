@@ -4,14 +4,48 @@
     android:layout_height="match_parent"
     android:orientation="horizontal">
 
-
-    <TextView
-        android:id="@+id/TextView_feed_type"
+    <RelativeLayout
+        android:id="@+id/layout_feed_type"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:text="135920"
-        android:textAppearance="?android:attr/textAppearanceSmall" />
+        android:layout_margin="16dp">
+
+    <Button
+        android:layout_marginTop="3dp"
+        android:id="@+id/type_feed_left"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:background="#9C27B0"
+        android:visibility="invisible"
+        android:text="L"
+        android:textSize="12sp"
+        android:textColor="#ffffff" />
+
+    <ImageView
+        android:id="@+id/type_feed_bottle"
+        android:layout_marginTop="3dp"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:padding="1dp"
+        android:visibility="visible"
+        android:background="@color/colorAccent"
+        android:clickable="true"
+        android:contentDescription="BottleButton"
+        android:src="@drawable/baby_bottle_white" />
+
+
+    <Button
+        android:id="@+id/type_feed_right"
+        android:layout_marginTop="3dp"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:visibility="invisible"
+        android:background="@color/colorPrimaryDark"
+        android:text="R"
+        android:textColor="#ffffff" />
+
+    </RelativeLayout>
+
 
     <TextView
         android:id="@+id/textView_feed_start_date"
