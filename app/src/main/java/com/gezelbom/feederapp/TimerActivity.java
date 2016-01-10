@@ -48,7 +48,7 @@ public class TimerActivity extends AppCompatActivity {
         timer.start();
         playButton.setEnabled(false);
 
-        /*lullabyButton.setOnClickListener(new View.OnClickListener() {
+        lullabyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (muted) {
@@ -61,7 +61,7 @@ public class TimerActivity extends AppCompatActivity {
                     stopLullaby();
                 }
             }
-        });*/
+        });
 
         //When stop button is pressed
         stopButton.setOnClickListener(new View.OnClickListener() {
@@ -70,7 +70,7 @@ public class TimerActivity extends AppCompatActivity {
             public void onClick(View v) {
                 //Stop the timer
                 timer.stop();
-//                stopLullaby();
+                stopLullaby();
                 elapsedTime += SystemClock.elapsedRealtime() - startedTime;
 
                 String endDate = MainActivity.getEpochTimeInInt();
@@ -89,6 +89,7 @@ public class TimerActivity extends AppCompatActivity {
 
     private void stopLullaby() {
         mediaPlayer.stop();
+        mediaPlayer.release();
     }
 
     private void playLullaby() {
