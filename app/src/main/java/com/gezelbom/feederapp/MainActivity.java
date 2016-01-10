@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.provider.Settings;
 import android.support.v7.app.NotificationCompat;
 import android.view.View;
 import android.widget.Button;
@@ -161,9 +162,6 @@ public class MainActivity extends ListActivity {
      * Schedule a notification when delay has passed
      */
     private void scheduleNotification(long delay) {
-        //Intent and Pending intent to publish the notification
-        Intent intent = new Intent(this, NotificationPublish.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
         //Intent and pendingIntent to start MainActivity on notification click
         Intent returnIntent = new Intent(this, MainActivity.class);
         PendingIntent resultPendingIntent = PendingIntent.getActivity(context, 0, returnIntent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -175,11 +173,14 @@ public class MainActivity extends ListActivity {
         builder.setAutoCancel(true);
         builder.setContentIntent(resultPendingIntent);
         builder.setSmallIcon(R.drawable.ic_not_icon);
-//        builder.setSound(Settings.System.DEFAULT_NOTIFICATION_URI);
+        builder.setSound(Settings.System.DEFAULT_NOTIFICATION_URI);
 
-        //add the notification as an extra to the intent
+        //Intent and Pending intent to publish the notification
+        //and add the notification as an extra to the intent
+        Intent intent = new Intent(this, NotificationPublish.class);
         intent.putExtra(NotificationPublish.NOTIFICATION_ID, 1002);
         intent.putExtra(NotificationPublish.NOTIFICATION, builder.build());
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
         //TODO make the time and notification configurable
         //Create an AlarmManager and schedule the Notification to the future currently 3hours

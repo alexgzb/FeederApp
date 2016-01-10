@@ -70,7 +70,8 @@ public class TimerActivity extends AppCompatActivity {
             public void onClick(View v) {
                 //Stop the timer
                 timer.stop();
-                stopLullaby();
+                if (!muted)
+                    stopLullaby();
                 elapsedTime += SystemClock.elapsedRealtime() - startedTime;
 
                 String endDate = MainActivity.getEpochTimeInInt();
